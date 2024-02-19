@@ -1,8 +1,7 @@
 {
   "IsEncrypted": false,
   "Values": {
-    "FUNCTIONS_WORKER_RUNTIME": "python",
-    "AzureWebJobsStorage": "",
-    "FUNCTIONS_EXTENSION_VERSION": "~3"
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true;DevelopmentStorageProxyUri=http://127.0.0.1",
+    "FUNCTIONS_WORKER_RUNTIME": "python"
   }
 }

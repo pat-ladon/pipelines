@@ -1,11 +1,13 @@
 import os
+import json
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 
 class GoogleSheetsClient:
-    def __init__(self, spreadsheet_id):
+    def __init__(self):
         self.credentials = self.authenticate()
-        self.spreadsheet_id = spreadsheet_id
+        self.spreadsheet_id = os.getenv("SPREADSHEET_ID")
+        self.service = self.authenticate()
 
     def authenticate(self):
         # Load credentials from environment variables
@@ -14,14 +16,20 @@ class GoogleSheetsClient:
         service = build('sheets', 'v4', credentials=credentials)
         return service
         
-    def update_sheet(self, sheet_name, df):
-            # Convert df to a list of lists
-            values = df.values.tolist()
-            # Include headers
-            values.insert(0, df.columns.tolist())
-            # Specify the range to update, e.g., 'Sheet1' or 'A1'
-            range_name = f'{sheet_name}!A1'
-            # Use the Sheets API to update the sheet
-            self.service.spreadsheets().values().update(
-                spreadsheetId=self.spreadsheet_id, range=range_name,
-                valueInputOption='USER_ENTERED', body={'values': values}).execute()
+    def clear_and_update_sheet(self, sheet_name, df):
+        # Clear the entire sheet
+        self.service.spreadsheets().values().clear(
+            spreadsheetId=self.spreadsheet_id, 
+            range=f'{sheet_name}',
+        ).execute()
+        
+        # Convert DataFrame to a list of lists for the update
+        values = [df.columns.tolist()] + df.values.tolist()
+        
+        # Update starting at A1, automatically adjusting the range to fit new data
+        self.service.spreadsheets().values().update(
+            spreadsheetId=self.spreadsheet_id, 
+            range=f'{sheet_name}!A1',
+            valueInputOption='USER_ENTERED', 
+            body={'values': values}
+        ).execute()

@@ -96,12 +96,12 @@ class PositionDataProcessor:
         
         return anonymized_df, mapping_df
 
-# Usage example
-processor = PositionDataProcessor('https://www.fca.org.uk/publication/data/short-positions-daily-update.xls')
-exploded_final_df, mapping_df = processor.process_positions()
+# # Usage example
+# processor = PositionDataProcessor('https://www.fca.org.uk/publication/data/short-positions-daily-update.xls')
+# exploded_final_df, mapping_df = processor.process_positions()
 
-# Optionally, save to CSV
-exploded_final_df.to_csv('anonymized_exploded_final_df.csv', index=False)
-mapping_df.to_csv('position_holder_mapping.csv', index=False)
+# # Optionally, save to CSV
+# exploded_final_df.to_csv('anonymized_exploded_final_df.csv', index=False)
+# mapping_df.to_csv('position_holder_mapping.csv', index=False)
 
-print("Processing complete. The DataFrame has been exploded and saved.")
+# print("Processing complete. The DataFrame has been exploded and saved.")
