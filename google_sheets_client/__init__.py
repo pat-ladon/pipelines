@@ -1,5 +1,7 @@
 import os
 import json
+import datetime
+import pandas as pd
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 
@@ -16,7 +18,16 @@ class GoogleSheetsClient:
         service = build('sheets', 'v4', credentials=credentials)
         return service
         
+    def convert_datetime(self, item):
+        """Converts pandas.Timestamp or datetime.date to string format."""
+        if isinstance(item, (pd.Timestamp, datetime.date)):
+            return item.isoformat()
+        return item
+        
     def clear_and_update_sheet(self, sheet_name, df):
+        # Convert date and Timestamp to string
+        for col in df.select_dtypes(include=['datetime64', 'object']).columns:
+            df[col] = df[col].apply(self.convert_datetime)
         # Clear the entire sheet
         self.service.spreadsheets().values().clear(
             spreadsheetId=self.spreadsheet_id, 
