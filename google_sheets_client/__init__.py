@@ -43,4 +43,21 @@ class GoogleSheetsClient:
             range=f'{sheet_name}!A1',
             valueInputOption='USER_ENTERED', 
             body={'values': values}
+        ).execute(num_retries=3, timeout=60)
+
+    def append_to_sheet(self, sheet_name: str, df: pd.DataFrame):
+        """Appends new data to a sheet without overwriting existing data."""
+        # Convert date and Timestamp to string
+        df = df.applymap(self.convert_datetime)
+        
+        # Convert DataFrame to a list of lists for the append operation
+        values = df.values.tolist()
+        
+        # Append data starting at the first column, automatically finding the first empty row
+        self.service.spreadsheets().values().append(
+            spreadsheetId=self.spreadsheet_id,
+            range=f'{sheet_name}!A1',
+            valueInputOption='USER_ENTERED',
+            insertDataOption='INSERT_ROWS',
+            body={'values': values}
         ).execute()
