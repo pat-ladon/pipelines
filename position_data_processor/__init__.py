@@ -66,6 +66,7 @@ class PositionDataProcessor:
         Anonymize position holder names with a sequence like 'Fund 001', 'Fund 002', etc.
         Returns the DataFrame with anonymized names and a mapping DataFrame.
         """
+        df = df.copy()
         unique_holders = df['Position Holder'].unique()
         fund_names = [f"Fund {str(i+1).zfill(3)}" for i in range(len(unique_holders))]
         mapping_dict = dict(zip(unique_holders, fund_names))
@@ -76,7 +77,7 @@ class PositionDataProcessor:
         
         return df, mapping_df
 
-    def process_positions(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def process_positions(self, months: int = 6) -> Tuple[pd.DataFrame, pd.DataFrame]:
         df_historic = self.load_sheet("historic")
         df_historic_filtered = self.filter_recent_records(df_historic)
         df_historic_cleaned = self.clean_dataframe(df_historic_filtered)
@@ -90,9 +91,13 @@ class PositionDataProcessor:
         final_df_with_date_range = self.apply_date_range(final_df_with_dates)
         
         exploded_df = self.explode_date_ranges(final_df_with_date_range)
+
+        exploded_df['Date'] = pd.to_datetime(exploded_df['Date'])
+        cutoff_date = pd.Timestamp.today() - pd.DateOffset(months=months)
+        filtered_exploded_df = exploded_df[exploded_df['Date'] >= cutoff_date]
         
         # Anonymize position holder names and get the mapping
-        anonymized_df, mapping_df = self.anonymize_position_holders(exploded_df)
+        anonymized_df, mapping_df = self.anonymize_position_holders(filtered_exploded_df)
         
         return anonymized_df, mapping_df
 

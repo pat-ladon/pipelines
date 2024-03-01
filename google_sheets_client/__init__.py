@@ -43,7 +43,7 @@ class GoogleSheetsClient:
             range=f'{sheet_name}!A1',
             valueInputOption='USER_ENTERED', 
             body={'values': values}
-        ).execute(num_retries=3, timeout=60)
+        ).execute(num_retries=3)
 
     def append_to_sheet(self, sheet_name: str, df: pd.DataFrame):
         """Appends new data to a sheet without overwriting existing data."""
