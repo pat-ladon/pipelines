@@ -27,7 +27,7 @@ class PositionDataProcessor:
         return pd.DataFrame()
 
     @staticmethod
-    def filter_recent_records(df: pd.DataFrame, months: int = 48) -> pd.DataFrame:
+    def filter_recent_records(df: pd.DataFrame, months: int = 6) -> pd.DataFrame:
         df['Position Date'] = pd.to_datetime(df['Position Date'])
         cutoff_date = (pd.Timestamp.today() - pd.DateOffset(months=months))
         return df[df['Position Date'] >= cutoff_date]
